@@ -105,6 +105,20 @@ class juniper_vpn(object):
 
         for form in self.br.forms():
             if form.name == 'frmLogin':
+                # Check for proceed-form
+                try:
+                    self.br.select_form(nr=0)
+                    self.br.form['sn-postauth-proceed']
+
+                    # Print message
+                    try:
+                        print self.br.form['sn-postauth-text']
+                    except mechanize._form.ControlNotFoundError:
+                        pass
+
+                    return 'continue'
+                except mechanize._form.ControlNotFoundError:
+                    pass
                 return 'login'
             elif form.name == 'frmDefender':
                 return 'key'
@@ -169,6 +183,7 @@ class juniper_vpn(object):
 
         # Enter username/password
         self.br.select_form(nr=0)
+
         self.br.form['username'] = self.args.username
         self.br.form['password'] = self.args.password
         if self.args.pass_prefix:
